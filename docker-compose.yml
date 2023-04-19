@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    image: openresty/openresty:alpine
+    scale: 3
+    volumes:
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+    networks:
+      - app-network
+
+  redis:
+    image: redis
+    networks:
+      - app-network
+
+  load_balancer:
+    image: nginx
+    depends_on:
+      - web
+    volumes:
+      - ./load_balancer.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
